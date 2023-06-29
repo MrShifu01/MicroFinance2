@@ -159,14 +159,6 @@ const ClientTable = () => {
     ],
   );
 
-  const handleViewProfile = (id) => {
-    navigate(`/client/${id}`)
-  }
-
-  const handleProfileEdit = (id) => {
-    navigate(`/client/add/${id}`)
-  }
-
   if(loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: "center", marginTop: "8rem" }}>

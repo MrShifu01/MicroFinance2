@@ -63,9 +63,32 @@ const logoutUser = async (req, res) => {
     res.cookie('token', '').json('logged out')
 }
 
+// Function Edit Users
+// Route    PUT/users
+// Access   Admin
+const editUsers = async (req, res) => {
+    const users = req.body;
+    const bulkUpdate = users.map((user) => ({
+      updateOne: {
+        filter: { _id: user._id },
+        update: { $set: { isAdmin: user.isAdmin } },
+        upsert: true,
+      },
+    }));
+  
+    try {
+      await User.bulkWrite(bulkUpdate);
+      res.status(200).json("Users updated successfully");
+    } catch (error) {
+      console.error("Error updating users:", error);
+      res.status(500).json("Failed to update users");
+    }
+  };
+
 module.exports = {
     getUsers,
     loginUser,
     logoutUser,
-    registerUser
+    registerUser,
+    editUsers
 }
