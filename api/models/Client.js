@@ -25,7 +25,7 @@ const ClientSchema = new mongoose.Schema({
         type: String, 
         req: true
     },
-    badLender: Boolean,
+    badLender: {type: Boolean, default: false},
     office: {
         type: String, 
         req: true,

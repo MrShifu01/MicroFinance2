@@ -56,13 +56,6 @@ const LoanTable = ({ id }) => {
     }
   };
 
-  // const clientLoanData = useMemo(() => {
-  //   if (loading || !Array.isArray(loanData)) {
-  //     return [];
-  //   }
-  //   return loanData.filter((loan) => loan.idNumber === id);
-  // }, [loanData, id, loading]);
-
   const handleSaveCell = async (row, cell, value) => {
     const updatedInfo = JSON.parse(JSON.stringify(tableData))
     updatedInfo[cell.row.index][cell.column.id] = value;
@@ -79,11 +72,7 @@ const LoanTable = ({ id }) => {
     }
   };
   
-  
-  
-
   const settledChoice = ['true', 'false'];
-
   const columns = useMemo(
     () => [
       {
@@ -137,15 +126,20 @@ const LoanTable = ({ id }) => {
         }),
         Cell: ({ row }) => (
           <div>
-            {row.original.settled === true && (
+            {row.original.settled ? (
               <span className="bg-green-500 p-2 rounded-lg">Settled</span>
-            )}
+            ) : (<span className="bg-red-500 p-2 rounded-lg">Not Settled</span>)}
           </div>
         ),
       },
       {
         accessorKey: "notes",
         header: "Notes",
+        size: 150,
+      },
+      {
+        accessorKey: "idNumber",
+        header: "ID Number",
         size: 150,
       },
     ],
@@ -155,9 +149,10 @@ const LoanTable = ({ id }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const handleCreateNewRow = async (values) => {
     try {
-      const response = await axios.post("/clients", values);
-      const createdClient = response.data;
-      const updatedLoanData = [...loanData, createdClient];
+      console.log(values.idNumber)
+      const response = await axios.post("/loans", values);
+      console.log(response.data)
+      const updatedLoanData = [...loanData, response.data];
       dispatch(setLoans(updatedLoanData));
       setCreateModalOpen(false);
     } catch (error) {
@@ -207,16 +202,19 @@ const LoanTable = ({ id }) => {
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
+        idNumber={id}
       />
     </>
   );
 };
 
-export const CreateNewLoanModal = ({ open, columns, onClose, onSubmit }) => {
+export const CreateNewLoanModal = ({ open, columns, onClose, onSubmit, idNumber }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey === 'settled') {
         acc[column.accessorKey ?? ""] = 'false';
+      } else if (column.accessorKey === 'idNumber') {
+        acc[column.accessorKey ?? ""] = idNumber;
       } else {
         acc[column.accessorKey ?? ""] = "";
       }
@@ -242,7 +240,7 @@ export const CreateNewLoanModal = ({ open, columns, onClose, onSubmit }) => {
             }}
           >
             {columns.map((column) => {
-              if (column.accessorKey === 'settled') {
+              if (column.accessorKey === 'settled' || column.accessorKey === 'idNumber') {
                 return null;
               } else {
                 return (

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { useSelector, useDispatch } from 'react-redux'
 import { Box, MenuItem, ThemeProvider, createTheme } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import LoanTable from './LoanTable'
 import { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -46,11 +46,11 @@ const ClientTable = () => {
     fetchData();
   }, []);
 
-  const navigate = useNavigate()
-
   const handleCreateNewRow = async (values) => {
+    const modifiedValues = { ...values, badLender: false };
+  
     try {
-      const response = await axios.post('/clients', values);
+      const response = await axios.post('/clients', modifiedValues);
       const createdClient = response.data;
       setTableData([...tableData, createdClient]);
       setCreateModalOpen(false);
@@ -58,6 +58,7 @@ const ClientTable = () => {
       console.log('Error creating client', error);
     }
   };
+  
   
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
@@ -123,19 +124,24 @@ const ClientTable = () => {
         accessorKey: 'badLender',
         header: 'Bad Lender',
         size: 150,
+        type: "boolean",
         muiTableBodyCellEditTextFieldProps: () => ({
-          children: badLenderChoice.map(choice => <MenuItem key={choice} value={choice}>
-                    {choice}
-                  </MenuItem>),
+          children: badLenderChoice.map(choice => (
+            <MenuItem key={choice} value={choice}>
+              {choice}
+            </MenuItem>
+          )),
           select: true
         }),
-        Cell: ({row}) => (
-            <div>
-                {row.original.badLender === true && <span 
-                className='bg-red-500 p-2 rounded-lg'>Bad Lender</span>}
-            </div>
+        Cell: ({ row }) => (
+          <div>
+            {row.original.badLender && (
+              <span className='bg-red-500 p-2 rounded-lg'>Bad Lender</span>
+            )}
+          </div>
         )
       },
+      
       {
         accessorKey: 'office',
         header: 'Office',
@@ -273,30 +279,34 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
       <DialogTitle textAlign="center">Create New Account</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: '100%',
-              minWidth: { xs: '300px', sm: '360px', md: '400px' },
-              gap: '1.5rem',
-            }}
-          >
-          {columns.map((column) => {
-            if (column.accessorKey === 'badLender') {
-              return null; // Exclude the 'badLender' column
-            }
-            return (
+        <Stack
+          sx={{
+            width: '100%',
+            minWidth: { xs: '300px', sm: '360px', md: '400px' },
+            gap: '1.5rem',
+          }}
+        >
+          {columns.map((column) => (
+            column.accessorKey !== 'badLender' && (
               <TextField
                 variant='standard'
                 key={column.accessorKey}
                 label={column.header}
                 name={column.accessorKey}
                 onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
+                  setValues({
+                    ...values,
+                    [e.target.name]: e.target.name,
+                  })
                 }
               />
-            );
-          })}
-          </Stack>
+            )
+          ))}
+
+        </Stack>
+
+
+
         </form>
       </DialogContent>
       <DialogActions sx={{ p: '1.25rem' }}>

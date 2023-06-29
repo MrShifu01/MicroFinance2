@@ -1,9 +1,10 @@
 const express = require('express') 
 const router = express.Router()
-const { getLoans, editLoans } = require('../controllers/loanController.js')
+const { getLoans, editLoans, addLoan } = require('../controllers/loanController.js')
 const Loan = require('../models/Loan.js')
 
 router.get('/', getLoans)
+router.post('/', addLoan)
 router.put('/', (req, res) => {
     const {
         _id,
