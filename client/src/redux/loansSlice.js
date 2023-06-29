@@ -12,10 +12,12 @@ const loansSlice = createSlice({
     reducers: {
         setLoans: (state, action) => {
             state.data = action.payload
+            localStorage.setItem('loans', JSON.stringify(state.data))
         },
 
         resetLoans: (state) => {
             state.data = []
+            localStorage.removeItem('loans')
         }
     }
 })

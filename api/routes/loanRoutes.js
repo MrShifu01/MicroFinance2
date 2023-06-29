@@ -6,7 +6,7 @@ const Loan = require('../models/Loan.js')
 router.get('/', getLoans)
 router.put('/', (req, res) => {
     const {
-        id,
+        _id,
         loanDate,
         repaymentDate,
         loanAmount,
@@ -16,7 +16,7 @@ router.put('/', (req, res) => {
     } = req.body
 
     const loanInfo = {
-        id,
+        id:_id,
         loanDate,
         repaymentDate,
         loanAmount,

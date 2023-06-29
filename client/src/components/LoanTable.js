@@ -1,35 +1,40 @@
 import { useSelector, useDispatch } from "react-redux";
-import { setLoans } from '../redux/loansSlice'
+import { setLoans } from '../redux/loansSlice';
 import { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
-import EditIcon from "@mui/icons-material/Edit";
-import { Edit } from "@mui/icons-material";
 import CircularProgress from '@mui/material/CircularProgress';
-import { format } from 'date-fns'
-
-
+import { format } from 'date-fns';
+import React from "react";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
   Stack,
   TextField,
-  Tooltip,
   Box,
-  ListItemIcon,
   MenuItem,
 } from "@mui/material";
 import axios from "axios";
 
 const LoanTable = ({ id }) => {
   const dispatch = useDispatch();
-  
-  const loanData = useSelector((state) => state.loans.data);
-
+  const loanData = useSelector((state) => state.loans.data)
+  const [tableData, setTableData] = useState(loanData);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (Array.isArray(loanData) && loanData.length > 0) {
+      const clientLoanData = loanData.filter((loan) => loan.idNumber === id);
+      setTableData(clientLoanData);
+    }
+  }, [loanData, id]);
+
+  useEffect(() => {
+    setTableData([]); // Clear the table data when a new client is selected
+    fetchLoanData()
+  }, [id]);
 
   useEffect(() => {
     if (!Array.isArray(loanData) || loanData.length === 0) {
@@ -43,6 +48,7 @@ const LoanTable = ({ id }) => {
       const response = await axios.get("/loans");
       const fetchedLoanData = response.data;
       dispatch(setLoans(fetchedLoanData));
+      setTableData(fetchedLoanData);
       setLoading(false);
     } catch (error) {
       console.log("Error fetching loan data:", error);
@@ -50,14 +56,33 @@ const LoanTable = ({ id }) => {
     }
   };
 
-  const clientLoanData = useMemo(() => {
-    if (loading || !Array.isArray(loanData)) {
-      return [];
-    }
-    return loanData.filter((loan) => loan.idNumber === id);
-  }, [loanData, id, loading]);
+  // const clientLoanData = useMemo(() => {
+  //   if (loading || !Array.isArray(loanData)) {
+  //     return [];
+  //   }
+  //   return loanData.filter((loan) => loan.idNumber === id);
+  // }, [loanData, id, loading]);
 
-  const settledChoice = ['true', 'false']
+  const handleSaveCell = async (row, cell, value) => {
+    const updatedInfo = JSON.parse(JSON.stringify(tableData))
+    updatedInfo[cell.row.index][cell.column.id] = value;
+    const singleRowData = updatedInfo[cell.row.index];
+    
+    try {
+      const response = await axios.put('/loans', singleRowData);
+      const updatedTableData = [...tableData]; // Create a copy of the tableData array
+      updatedTableData[row.index] =  response.data;
+      setTableData(updatedTableData);
+      dispatch(setLoans(updatedTableData))
+    } catch (error) {
+      console.log('Error updating loan data:', error);
+    }
+  };
+  
+  
+  
+
+  const settledChoice = ['true', 'false'];
 
   const columns = useMemo(
     () => [
@@ -66,18 +91,27 @@ const LoanTable = ({ id }) => {
         header: "Loan Date",
         size: 150,
         type: 'date',
-        Cell: ({row}) => {
-          return <div>{format(new Date(row.original.loanDate), "MMM d, yyyy")}</div>
-        }
+        muiTableBodyCellEditTextFieldProps: {
+          type: 'date',
+          value: ({ row }) => {
+            return row.original.loanDate;
+          },
+        },
+        Cell: ({ row }) => {
+          return <div>{format(new Date(row.original.loanDate), "yyyy-MM-dd")}</div>;
+        },
       },
       {
         accessorKey: "repaymentDate",
         header: "Repay Date",
         size: 150,
         type: 'date',
-        Cell: ({row}) => {
-          return <div>{format(new Date(row.original.repaymentDate), "MMM d, yyyy")}</div>
-        }
+        muiTableBodyCellEditTextFieldProps: {
+          type: 'date',
+        },
+        Cell: ({ row }) => {
+          return <div>{format(new Date(row.original.repaymentDate), "yyyy-MM-dd")}</div>;
+        },
       },
       {
         accessorKey: "loanAmount",
@@ -94,10 +128,12 @@ const LoanTable = ({ id }) => {
         header: "Settled",
         size: 150,
         muiTableBodyCellEditTextFieldProps: () => ({
-          children: settledChoice.map(choice => <MenuItem key={choice} value={choice}>
-                    {choice}
-                  </MenuItem>),
-          select: true
+          children: settledChoice.map(choice => (
+            <MenuItem key={choice} value={choice}>
+              {choice}
+            </MenuItem>
+          )),
+          select: true,
         }),
         Cell: ({ row }) => (
           <div>
@@ -113,28 +149,8 @@ const LoanTable = ({ id }) => {
         size: 150,
       },
     ],
-    []
+    [],
   );
-
-  const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-    try {
-      const updatedValues = { id: row.original._id, ...values };
-      await axios.put("/loans", updatedValues);
-
-      // Update the local table data and exit editing mode
-      const updatedLoanData = [...loanData];
-      const updatedRow = { ...row.original, ...values };
-      const rowIndex = loanData.findIndex(
-        (loan) => loan._id === row.original._id
-      );
-      updatedLoanData[rowIndex] = updatedRow;
-      dispatch(setLoans(updatedLoanData));
-
-      exitEditingMode();
-    } catch (error) {
-      console.log("Error updating client data:", error);
-    }
-  };
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const handleCreateNewRow = async (values) => {
@@ -149,59 +165,33 @@ const LoanTable = ({ id }) => {
     }
   };
 
-  const [editingRow, setEditingRow] = useState(null);
-  const handleCancelRowEdits = () => {
-    setEditingRow(null);
-  };
-
-    // Render the loading state if necessary
-    if (loading) {
-      return (
-        <Box sx={{ display: 'flex', justifyContent: "center", marginTop: "8rem" }}>
-          <CircularProgress color="inherit"  />
-        </Box>
-      )
-    }
+  // Render the loading state if necessary
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: "center", marginTop: "8rem" }}>
+        <CircularProgress color="inherit" />
+      </Box>
+    );
+  }
 
   return (
     <>
       <MaterialReactTable
         columns={columns}
-        data={clientLoanData}
-        editingMode="modal" //default
+        data={tableData.filter((loan) => loan.idNumber === id)}
+        editingMode="cell"
         enableColumnOrdering
         enableEditing
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
+        muiTableBodyCellEditTextFieldProps={({ row, cell }) => ({
+          onBlur: (event) => {
+            handleSaveCell(row, cell, event.target.value);
+          },
+        })}
         enableColumnFilterModes
         enablePinning
-        enableRowActions
         enablePagination={false}
         enableRowVirtualization
         initialState={{ showColumnFilters: false }}
-        renderRowActionMenuItems={({ closeMenu }) => (
-          <MenuItem
-            key={1}
-            onClick={() => {
-              closeMenu();
-            }}
-            sx={{ m: 0 }}
-          >
-            <ListItemIcon>
-              <EditIcon />
-            </ListItemIcon>
-            Edit
-          </MenuItem>
-        )}
-        renderRowActions={({ row, table }) => (
-          <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
         renderTopToolbarCustomActions={() => (
           <Button
             color="primary"
@@ -225,7 +215,11 @@ const LoanTable = ({ id }) => {
 export const CreateNewLoanModal = ({ open, columns, onClose, onSubmit }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
-      acc[column.accessorKey ?? ""] = "";
+      if (column.accessorKey === 'settled') {
+        acc[column.accessorKey ?? ""] = 'false';
+      } else {
+        acc[column.accessorKey ?? ""] = "";
+      }
       return acc;
     }, {})
   );
@@ -247,19 +241,25 @@ export const CreateNewLoanModal = ({ open, columns, onClose, onSubmit }) => {
               gap: "1.5rem",
             }}
           >
-            {columns.map((column) => (
-              <>
-                <h2>{column.header}</h2>
-                <TextField
-                  key={column.accessorKey}
-                  type={column.type}
-                  name={column.accessorKey}
-                  onChange={(e) =>
-                    setValues({ ...values, [e.target.name]: e.target.value })
-                  }
-                />
-              </>
-            ))}
+            {columns.map((column) => {
+              if (column.accessorKey === 'settled') {
+                return null;
+              } else {
+                return (
+                  <React.Fragment key={column.accessorKey}>
+                    <h2>{column.header}</h2>
+                    <TextField
+                      key={column.accessorKey}
+                      type={column.type}
+                      name={column.accessorKey}
+                      onChange={(e) =>
+                        setValues({ ...values, [e.target.name]: e.target.value })
+                      }
+                    />
+                  </React.Fragment>
+                );
+              }
+            })}
           </Stack>
         </form>
       </DialogContent>

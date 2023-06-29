@@ -1,10 +1,8 @@
 import { useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { useSelector } from 'react-redux'
-import { Box, ListItemIcon, MenuItem, ThemeProvider, createTheme } from '@mui/material';
-import { AccountCircle } from '@mui/icons-material';
+import { useSelector, useDispatch } from 'react-redux'
+import { Box, MenuItem, ThemeProvider, createTheme } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom'
-import EditIcon from '@mui/icons-material/Edit';
 import LoanTable from './LoanTable'
 import { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -21,6 +19,7 @@ import {
 } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import axios from 'axios';
+import { setClients } from '../redux/clientsSlice';
 
 const ClientTable = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -29,12 +28,14 @@ const ClientTable = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(true)
   const mode = useSelector((state) => state.mode.mode)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/clients');
         const fetchedData = response.data;
+        dispatch(setClients(fetchedData))
         setTableData(fetchedData);
         setLoading(false)
       } catch (error) {
@@ -58,7 +59,6 @@ const ClientTable = () => {
     }
   };
   
-
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
       try {
@@ -157,7 +157,6 @@ const ClientTable = () => {
         size: 150,
       },
     ],
-    [],
   );
 
   const handleViewProfile = (id) => {
@@ -223,7 +222,6 @@ const ClientTable = () => {
         onEditingRowCancel={handleCancelRowEdits}
         enableColumnFilterModes
         enablePinning
-        enableRowActions
         enablePagination={false}
         enableRowVirtualization
         initialState={{ showColumnFilters: false }}
@@ -234,34 +232,6 @@ const ClientTable = () => {
             </div>
           </Box>
         )}
-        renderRowActionMenuItems={({ closeMenu, row }) => [
-          <MenuItem
-            key={0}
-            onClick={() => {
-              handleViewProfile(row.original._id)
-              closeMenu();
-            }}
-            sx={{ m: 0 }}
-          >
-            <ListItemIcon>
-              <AccountCircle />
-            </ListItemIcon>
-            View Profile
-          </MenuItem>,
-          <MenuItem
-            key={1}
-            onClick={() => {
-              handleProfileEdit(row.original._id)
-              closeMenu();
-            }}
-            sx={{ m: 0 }}
-          >
-            <ListItemIcon>
-              <EditIcon />
-            </ListItemIcon>
-            Edit
-          </MenuItem>,
-        ]}
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
             <Tooltip arrow placement="left" title="Edit">
@@ -318,8 +288,13 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
               gap: '1.5rem',
             }}
           >
-            {columns.map((column) => (
+          {columns.map((column) => {
+            if (column.accessorKey === 'badLender') {
+              return null; // Exclude the 'badLender' column
+            }
+            return (
               <TextField
+                variant='standard'
                 key={column.accessorKey}
                 label={column.header}
                 name={column.accessorKey}
@@ -327,7 +302,8 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
               />
-            ))}
+            );
+          })}
           </Stack>
         </form>
       </DialogContent>

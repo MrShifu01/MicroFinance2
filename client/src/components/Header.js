@@ -7,7 +7,7 @@ import axios from 'axios'
 
 const Header = () => {
   const page = useSelector((state) => state.page.page)
-  const user = useSelector((state) => state.user.data)
+  const user = useSelector((state) => state.user.data).data
   const mode = useSelector((state) => state.mode.mode)
 
   const dispatch = useDispatch()
@@ -22,10 +22,10 @@ const Header = () => {
         <nav className="flex justify-between items-center">
           <div>
             <Link to="/">
-              <h1 className='text-white text-4xl my-4'>LMG</h1>
+              <h1 className=' text-4xl my-4'>LMG</h1>
             </Link>
           </div>
-          <ul className="text-white flex gap-3">
+          <ul className=" flex gap-3">
             
             <li className={page === 'admin' ? "text-black" : ''}>
               {user && user.isAdmin && (

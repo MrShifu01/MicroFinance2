@@ -28,7 +28,8 @@ const ClientSchema = new mongoose.Schema({
     badLender: Boolean,
     office: {
         type: String, 
-        req: true
+        req: true,
+        default: false
     },
     address: {
         type: String, 

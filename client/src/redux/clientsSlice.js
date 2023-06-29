@@ -10,10 +10,12 @@ const clientsSlice = createSlice({
   reducers: {
     setClients: (state, action) => {
       state.data = action.payload;
+      localStorage.setItem('clients', JSON.stringify(state))
     },
 
     resetClients: (state) => {
       state.data = []
+      localStorage.removeItem('clients')
     }
   },
 });

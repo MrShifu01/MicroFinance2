@@ -6,6 +6,7 @@ import ClientTable from "../components/ClientTable";
 import { Navigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/material';
+// import AltClientTable from "../components/AltClientTable";
 
 const IndexPage = () => {
   const user = useSelector((state) => state.user.data);
@@ -58,6 +59,7 @@ const IndexPage = () => {
 
   return (
     <div>
+      {/* <AltClientTable/> */}
       <ClientTable />
     </div>
   );

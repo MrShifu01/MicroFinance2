@@ -12,9 +12,10 @@ const getLoans = async (req, res) => {
 // Route    GET /loans
 // Access   Public
 const editLoans = async (loanInfo, req, res) => {
-    const updatedLoan = await Loan.updateOne(
+    const updatedLoan = await Loan.findOneAndUpdate(
         { _id: loanInfo.id },
-        { $set: loanInfo }
+        { $set: loanInfo },
+        { new: true }
       );
       res.status(200).json(updatedLoan);
 }
