@@ -3,13 +3,15 @@ import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { setUser } from '../redux/userSlice';
+import { setUser, setTempUser } from '../redux/userSlice';
 import { Link, Navigate } from 'react-router-dom'
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [redirect, setRedirect] = useState(false)
+    const [rememberMe, setRememberMe] = useState(false); // State for the Checkbox
 
     const dispatch = useDispatch()
 
@@ -20,7 +22,14 @@ export default function Login() {
               email,
               password
           })
-          dispatch(setUser(response.data))
+              // Check if rememberMe is checked and dispatch accordingly
+            if (rememberMe) {
+              // Dispatch an action for rememberMe being checked
+              dispatch(setUser(response.data));
+            } else {
+              // Dispatch an action for rememberMe being unchecked
+              dispatch(setTempUser(response.data));
+            }
           setRedirect(true)
         } catch (error) {
           alert("fail")
@@ -56,6 +65,12 @@ export default function Login() {
           label="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
+        />
+        <FormControlLabel
+          className='flex justify-center'
+          label="Remember me?"
+          labelPlacement="start"
+          control={<Checkbox checked={rememberMe} onChange={ev => setRememberMe(ev.target.checked)} />}
         />
         <button className='bg-primary w-20 mx-auto rounded-lg my-2' onClick={ev => handleLogin(ev, email, password)}>Login</button>
       </div>

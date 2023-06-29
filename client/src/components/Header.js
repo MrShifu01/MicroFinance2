@@ -7,7 +7,7 @@ import axios from 'axios'
 
 const Header = () => {
   const page = useSelector((state) => state.page.page)
-  const user = useSelector((state) => state.user.data).data
+  const user = useSelector((state) => state.user.data)
   const mode = useSelector((state) => state.mode.mode)
 
   const dispatch = useDispatch()
