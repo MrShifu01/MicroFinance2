@@ -63,7 +63,7 @@ const logoutUser = async (req, res) => {
     res.cookie('token', '').json('logged out')
 }
 
-// Function Edit Users
+// Function Edit Users (Specifically for admin users to be able to set other users as admin also)
 // Route    PUT/users
 // Access   Admin
 const editUsers = async (req, res) => {

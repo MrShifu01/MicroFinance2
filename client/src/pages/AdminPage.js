@@ -36,12 +36,6 @@ const AdminPage = () => {
     alert("Data Updated");
   };
 
-  const handleSaveToLocalStorage = () => {
-    localStorage.setItem('clients', JSON.stringify(clientData));
-    localStorage.setItem('loans', JSON.stringify(loanData));
-    alert('Data Stored to Local Storage');
-  };
-
   const handleDeleteFromLocalStorage = () => {
     localStorage.removeItem('clients');
     localStorage.removeItem('loans');
@@ -58,13 +52,6 @@ const AdminPage = () => {
           className="max-w-xs p-4 bg-gray-500 rounded-xl"
         >
           Update Data from Database
-        </button>
-
-        <button
-          onClick={handleSaveToLocalStorage}
-          className="max-w-xs p-4 bg-blue-500 rounded-xl"
-        >
-          Save Data to Local Storage
         </button>
 
         <button
