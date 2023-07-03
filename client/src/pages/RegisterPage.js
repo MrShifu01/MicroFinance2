@@ -16,13 +16,23 @@ export default function Register() {
 
     const handleRegister = async (ev, name, email, password) => {
         ev.preventDefault()
+
+        if (!email.endsWith('@gmail.com')) {
+          alert('Email must be a gmail address');
+          return;
+        }
+
+        if (password.length < 6) {
+          alert('Password must be more than 5 characters');
+          return;
+        }
+
         try {
           const response = await axios.post('/users/register', {
             name,  
             email,
             password
           })
-          console.log(response.data)
           dispatch(setUser(response.data))
           setRedirect(true)
 
@@ -57,7 +67,7 @@ export default function Register() {
         <TextField
           required
           id="outlined-required"
-          label="Email"
+          label="Email (Must be Gmail)"
           value={email}
           onChange={e => setEmail(e.target.value)}
         />

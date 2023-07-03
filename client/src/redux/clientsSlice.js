@@ -10,7 +10,7 @@ const clientsSlice = createSlice({
   reducers: {
     setClients: (state, action) => {
       state.data = action.payload;
-      localStorage.setItem('clients', JSON.stringify(state))
+      localStorage.setItem('clients', JSON.stringify(state.data))
     },
 
     resetClients: (state) => {

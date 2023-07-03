@@ -3,11 +3,11 @@ import pageReducer from './pageSlice'
 import clientsReducer from './clientsSlice'
 import loansReducer from './loansSlice'
 import userReducer from './userSlice'
-import modeReducer from './modeSlice'
+import settingsReducer from './settingsSlice'
 
 const store = configureStore({
     reducer: {
-        mode: modeReducer,
+        settings: settingsReducer,
         user: userReducer,
         loans: loansReducer,
         clients: clientsReducer,

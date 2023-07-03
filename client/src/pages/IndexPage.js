@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoans } from "../redux/loansSlice";
+import { setPage } from "../redux/pageSlice";
 import ClientTable from "../components/ClientTable";
 import { Navigate } from "react-router-dom";
-import CircularProgress from '@mui/material/CircularProgress';
-import { Box } from '@mui/material';
-// import AltClientTable from "../components/AltClientTable";
+import SideBar from "../components/SideBar";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const IndexPage = () => {
   const user = useSelector((state) => state.user.data);
@@ -14,6 +14,11 @@ const IndexPage = () => {
   const savedLoans = JSON.parse(localStorage.getItem("loans"));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const settings = useSelector((state) => state.settings.settings)
+
+  useEffect(() => {
+    dispatch(setPage('index'))
+  }, [dispatch])
 
   useEffect(() => {
     const getData = async () => {
@@ -47,9 +52,7 @@ const IndexPage = () => {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: "center", marginTop: "8rem" }}>
-        <CircularProgress color="inherit"  />
-      </Box>
+      <LoadingSpinner/>
     );
   }
 
@@ -58,10 +61,19 @@ const IndexPage = () => {
   }
 
   return (
-    <div>
-      {/* <AltClientTable/> */}
-      <ClientTable />
-    </div>
+      <div>
+        {settings && (
+          <div className="grid grid-cols-8">
+            <div className="text-sm p-4 col-span-1 min-h-screen flex flex-col sidebar">
+              <SideBar />
+            </div>
+            <div className="col-span-7">
+              <ClientTable />
+            </div>
+          </div>
+        )}
+        {!settings && (<ClientTable/>)}
+      </div>
   );
 };
 

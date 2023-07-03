@@ -1,75 +1,19 @@
 const express = require('express') 
 const router = express.Router()
-const {getClients, editClient, createClient} = require('../controllers/clientController.js')
+const isAdminHandler = require('../middleware/isAdminHandler')
+const {getClients, editClient, createClient, deleteClient} = require('../controllers/clientController.js')
+const JWTHandler = require('../middleware/JWTHandler')
 
+// Get all clients
 router.get('/', getClients)
-router.put('/', (req, res) => {
-    const { 
-        id, 
-        name, 
-        idNumber, 
-        address, 
-        notes, 
-        settled, 
-        bank, 
-        accNumber, 
-        salaryDate, 
-        phone, 
-        badLender, 
-        office,
-        industry
-    } = req.body
 
-    const userInfo = {
-        id, 
-        name, 
-        idNumber, 
-        address, 
-        notes, 
-        settled, 
-        bank, 
-        accNumber, 
-        salaryDate, 
-        phone, 
-        badLender, 
-        office,
-        industry
-    }
+// Edit a client (AdminOnly)
+router.put('/', JWTHandler, isAdminHandler, editClient);
 
-    editClient(userInfo, req, res)
-})
-router.post('/', (req, res) => {
-    const { 
-        name, 
-        idNumber, 
-        address, 
-        notes, 
-        settled, 
-        bank, 
-        accNumber, 
-        salaryDate, 
-        phone, 
-        badLender, 
-        office,
-        industry
-    } = req.body
+// Create a new client (AdminOnly)
+router.post('/', JWTHandler, isAdminHandler, createClient)
 
-    const userInfo = {
-        name, 
-        idNumber, 
-        address, 
-        notes, 
-        settled, 
-        bank, 
-        accNumber, 
-        salaryDate, 
-        phone, 
-        badLender, 
-        office,
-        industry
-    }
-
-    createClient(userInfo, req, res)
-})
+// Delete a client (AdminOnly)
+router.delete('/:id', JWTHandler, isAdminHandler, deleteClient)
 
 module.exports = router

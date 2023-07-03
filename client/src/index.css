@@ -10,3 +10,11 @@ body {
     margin: 0;
 }
 
+.sidebar {
+    height: 100vh; /* Set the height to 100% of the viewport height */
+    background-color:#ffffff;
+    text-align: center;
+    border-left: 1px solid #eee;
+    border-top: 1px solid #eee;
+  }
+

@@ -6,16 +6,12 @@ const clientRoutes =require('./routes/clientRoutes.js')
 const userRoutes =require('./routes/userRoutes.js')
 const loanRoutes =require('./routes/loanRoutes.js')
 const cors = require('cors')
-const bcrypt = require('bcryptjs')
 const cookieParser = require('cookie-parser')
-// NEED TO ADD THE CSV PARSER OR MAYBE ON THE FRONTEND
-
 
 // Configurations
 const PORT = process.env.PORT || 8000 
 connectDB()
 const app = express()
-
 
 // Middleware
 app.use(cors({
@@ -32,10 +28,10 @@ app.use('/loans', loanRoutes)
 app.use('/users', userRoutes)
 
 // Test Route
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
     res.json("API is working!")
 })
 
-app.listen(8000, () => {
-    console.log(`Server running`)
+app.listen(PORT, () => {
+    console.log(`Server running on port: ${PORT}`)
 })
