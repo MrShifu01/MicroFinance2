@@ -2,13 +2,11 @@
 
 This repository contains the source code for the Cash Loans Management System, a web application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. The system is designed to facilitate the management of client information and loan records for a cash loans business.
 
-Links: 
+**Links:**
 
-Github: https://github.com/MrShifu01/MicroFinance2
-
-Render.com Server Deployment: https://microfinance-server.onrender.com/
-
-Vercel Deployed: 
+- GitHub: [MicroFinance2](https://github.com/MrShifu01/MicroFinance2)
+- Render.com Server Deployment: [MicroFinance Server](https://microfinance-server.onrender.com/)
+- Vercel Deployed: [MicroFinance Frontend](https://microfinance-frontend.vercel.app/)
 
 ## Clone Repository
 
