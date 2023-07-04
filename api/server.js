@@ -25,7 +25,9 @@ app.use(cors({
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(cookieParser()); // Parse cookies
-app.use(helmet()); // Set various HTTP headers for security
+app.use(helmet({
+    referrerPolicy: { policy: 'no-referrer-when-downgrade' }
+})); // Set various HTTP headers for security
 
 // Routes
 app.use('/clients', clientRoutes); // Handle client-related routes
