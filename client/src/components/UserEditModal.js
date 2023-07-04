@@ -12,16 +12,17 @@ import { useSelector } from 'react-redux';
 import { Delete } from '@mui/icons-material';
 
 export const EditModal = ({ open, onClose }) => {
-  const [users, setUsers] = useState([]);
-  const user = useSelector((state) => state.user.data);
+  const [users, setUsers] = useState([]); // State for storing the list of users
+  const user = useSelector((state) => state.user.data); // Get the logged-in user data from the Redux store
 
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const response = await axios.get('/users');
-        setUsers(response.data);
+        const response = await axios.get('/users'); // Fetch the users from the API endpoint '/users'
+        setUsers(response.data); // Update the state with the fetched users
       } catch (error) {
         console.error('Error retrieving users:', error);
+        // Handle error retrieving users
       }
     };
     getUsers();
@@ -29,7 +30,7 @@ export const EditModal = ({ open, onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      await axios.put('/users', users); // Assuming your API endpoint for updating users is '/users'
+      await axios.put('/users', users); // Send a PUT request to the API endpoint '/users' to update user data
       onClose();
       alert('User data saved!');
     } catch (error) {
@@ -48,7 +49,7 @@ export const EditModal = ({ open, onClose }) => {
       }
       return user;
     });
-    setUsers(updatedUsers);
+    setUsers(updatedUsers); // Update the state with the modified user data
   };
 
   const handleDeleteUser = async (userId) => {
@@ -64,12 +65,13 @@ export const EditModal = ({ open, onClose }) => {
     }
 
     try {
-      await axios.delete(`/users/${userId}`);
-      const updatedUsers = users.filter((user) => user._id !== userId);
-      setUsers(updatedUsers);
+      await axios.delete(`/users/${userId}`); // Send a DELETE request to the API endpoint '/users/{userId}' to delete a user
+      const updatedUsers = users.filter((user) => user._id !== userId); // Filter out the deleted user from the state
+      setUsers(updatedUsers); // Update the state with the updated list of users
       alert('User deleted successfully!');
     } catch (error) {
       console.log('Error deleting user:', error);
+      // Handle error deleting user
     }
   };
 
@@ -85,10 +87,12 @@ export const EditModal = ({ open, onClose }) => {
               gap: '1.5rem',
             }}
           >
+            {/* Render the list of users */}
             {users.length > 0 && users.map((user) => (
               <div key={user._id}>
                 <div>{user.name}</div>
                 <div>{user.email}</div>
+                {/* Select dropdown for changing user's isAdmin status */}
                 <select
                   value={user.isAdmin ? 'True' : 'False'}
                   onChange={(event) => handleInputChange(event, user._id)}
@@ -96,6 +100,7 @@ export const EditModal = ({ open, onClose }) => {
                   <option value="True">True</option>
                   <option value="False">False</option>
                 </select>
+                {/* Button to delete a user */}
                 <Button onClick={() => handleDeleteUser(user._id)}>
                   <Delete />
                 </Button>

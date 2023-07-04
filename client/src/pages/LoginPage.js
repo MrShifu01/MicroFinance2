@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { setUser, setTempUser } from '../redux/userSlice';
 import { Link, Navigate } from 'react-router-dom'
 import { Checkbox, FormControlLabel } from '@mui/material';
+import { setPage } from "../redux/pageSlice";
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -14,6 +15,10 @@ export default function Login() {
     const [rememberMe, setRememberMe] = useState(false); // State for the Checkbox
 
     const dispatch = useDispatch()
+
+    useEffect(() => {
+      dispatch(setPage('login')); // Set the page in the Redux store to 'login' when the component mounts
+    }, [dispatch]);
 
     const handleLogin = async (ev, email, password) => {
         ev.preventDefault()

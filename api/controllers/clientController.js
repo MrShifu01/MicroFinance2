@@ -1,15 +1,17 @@
 const Client = require('../models/Client.js')
 const asyncHandler = require('../middleware/asyncHandler.js')
 
+// A file that handles all the logic of various CRUD operations in regards to the Client data
+
 // Function get all clients
 // Route    GET /clients
 // Access   Public
 const getClients = asyncHandler(async (req, res) => {
   try {
-    const clients = await Client.find();
-    res.status(200).json(clients);
+    const clients = await Client.find()
+    res.status(200).json(clients)
   } catch (error) {
-    res.status(500).json({ message: "Error fetching clients", error });
+    res.status(500).json({ message: "Error fetching clients", error })
   }
 });
 
@@ -54,10 +56,10 @@ const clientInfo = {
       { _id: clientInfo.id },
       { $set: clientInfo }
     );
-    res.status(200).json(updatedClient);
+    res.status(200).json(updatedClient)
   } catch (error) {
     // Handle any errors that occur during the update
-    console.log('Error updating client:', error);
+    console.log('Error updating client:', error)
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
@@ -96,10 +98,10 @@ const createClient = asyncHandler(async (req, res) => {
       office,
       industry
     }
-    const newClient = await Client.create(clientInfo);
-    res.status(200).json(newClient);
+    const newClient = await Client.create(clientInfo)
+    res.status(200).json(newClient)
   } catch (error) {
-    res.status(400).json({ message: "Failed to create client", error });
+    res.status(400).json({ message: "Failed to create client", error })
   }
 });
 
@@ -108,19 +110,19 @@ const createClient = asyncHandler(async (req, res) => {
 // Access   Admin
 const deleteClient = asyncHandler(async (req, res) => {
   try {
-    const { id } = req.params;
-    const clientDoc = await Client.deleteOne({ _id: id });
+    const { id } = req.params
+    const clientDoc = await Client.deleteOne({ _id: id })
 
     if (clientDoc.deletedCount === 0) {
       // If no client was deleted, return a 404 Not Found response
-      return res.status(404).json({ message: 'Client not found' });
+      return res.status(404).json({ message: 'Client not found' })
     }
 
-    res.status(200).json({ message: 'Client deleted' });
+    res.status(200).json({ message: 'Client deleted' })
   } catch (error) {
     // Handle any error that occurred during the deletion process
-    console.log('Error deleting client:', error);
-    res.status(500).json({ message: 'Failed to delete client' });
+    console.log('Error deleting client:', error)
+    res.status(500).json({ message: 'Failed to delete client' })
   }
 });
 

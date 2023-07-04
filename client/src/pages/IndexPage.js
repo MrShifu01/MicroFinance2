@@ -14,12 +14,13 @@ const IndexPage = () => {
   const savedLoans = JSON.parse(localStorage.getItem("loans"));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const settings = useSelector((state) => state.settings.settings)
+  const settings = useSelector((state) => state.settings.settings);
 
   useEffect(() => {
-    dispatch(setPage('index'))
-  }, [dispatch])
+    dispatch(setPage('index')); // Set the page in the Redux store to 'index' when the component mounts
+  }, [dispatch]);
 
+  // useEffect hook to fetch the loan data and set it to the store
   useEffect(() => {
     const getData = async () => {
       try {
@@ -47,33 +48,37 @@ const IndexPage = () => {
   }, [dispatch, savedLoans]);
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" />; // Redirect to the login page if user data is not available
   }
 
   if (isLoading) {
     return (
-      <LoadingSpinner/>
+      <LoadingSpinner /> // Display a loading spinner while data is being fetched
     );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error}</div>; // Display an error message if there was an error fetching the data
   }
 
   return (
-      <div>
-        {settings && (
-          <div className="grid grid-cols-8">
-            <div className="text-sm p-4 col-span-1 min-h-screen flex flex-col sidebar">
-              <SideBar />
-            </div>
-            <div className="col-span-7">
-              <ClientTable />
-            </div>
+    <div>
+      {settings && (
+        // Render the sidebar and client table in a grid layout if settings are available
+        <div className="grid grid-cols-8">
+          <div className="text-sm p-4 col-span-1 min-h-screen flex flex-col sidebar">
+          {/* Sidebar component */}
+            <SideBar /> 
           </div>
-        )}
-        {!settings && (<ClientTable/>)}
-      </div>
+          <div className="col-span-7">
+          {/* Client table component */}
+            <ClientTable />
+          </div>
+        </div>
+      )}
+      {/* Render only the client table if settings are not available */}
+      {!settings && <ClientTable />}
+    </div>
   );
 };
 

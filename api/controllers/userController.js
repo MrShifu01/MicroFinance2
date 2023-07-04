@@ -2,6 +2,8 @@ const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('../middleware/asyncHandler.js')
 
+// A file that handles all the logic of various CRUD operations in regards to the User data
+
 // Password Encryption
 const bcrypt = require('bcryptjs')
 const salt = bcrypt.genSaltSync(10)
@@ -11,10 +13,10 @@ const salt = bcrypt.genSaltSync(10)
 // Access   Admin
 const getUsers = asyncHandler(async (req, res) => {
     try {
-      const users = await User.find();
-      res.json(users);
+      const users = await User.find()
+      res.json(users)
     } catch (error) {
-      res.status(500).json({ message: "Error retrieving users" });
+      res.status(500).json({ message: "Error retrieving users" })
     }
   });
   
@@ -22,63 +24,69 @@ const getUsers = asyncHandler(async (req, res) => {
 // Route    POST /users
 // Access   Public
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body
+    // Password validation for registering user
     if(password.length < 6) {
       throw error
     }
     try {
-      const userExists = await User.findOne({ email });
+      // See if email is already in use
+      const userExists = await User.findOne({ email })
       if (userExists) {
-        res.status(400).json({ message: "User already exists" });
+        res.status(400).json({ message: "User already exists" })
       } else {
         const userDoc = await User.create({
           name,
           email,
           password: bcrypt.hashSync(password, salt),
-        });
+        })
+        // After user registers, automatically log them in and create a JWT
         jwt.sign(
           { email: userDoc.email, id: userDoc._id, isAdmin: userDoc.isAdmin },
           process.env.JWT_SECRET,
           {},
           (error, token) => {
             if (error) throw error;
-            res.cookie("token", token).json(userDoc);
+            res.cookie("token", token).json(userDoc)
           }
-        );
+        )
       }
     } catch (error) {
-      res.status(500).json({ message: "Error registering user" });
+      res.status(500).json({ message: "Error registering user" })
     }
-  });
+  })
   
 // Function Login
 // Route    POST /users
 // Access   Public
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body
   
     try {
-      const userDoc = await User.findOne({ email });
+      const userDoc = await User.findOne({ email })
   
       if (!userDoc) {
-        res.status(400).json({ message: "Invalid email or password" });
+        res.status(400).json({ message: "Invalid email or password" })
       } else {
-        const passOk = bcrypt.compareSync(password, userDoc.password);
+        // Use Bcrypt to compare the passwords, hashed. 
+        const passOk = bcrypt.compareSync(password, userDoc.password)
         if (!passOk) {
-          res.status(400).json({ message: "Invalid email or password" });
+          res.status(400).json({ message: "Invalid email or password" })
         } else {
+          // Create a JWT for the signed in user
           jwt.sign(
             { email: userDoc.email, id: userDoc._id, isAdmin: userDoc.isAdmin },
             process.env.JWT_SECRET,
             {},
             (error, token) => {
               if (error) {
-                res.status(500).json({ message: "Error signing the token" });
+                res.status(500).json({ message: "Error signing the token" })
               } else {
-                res.cookie("token", token).json(userDoc);
+                // Send the JWT via a cookie for better security
+                res.cookie("token", token).json(userDoc)
               }
             }
-          );
+          )
         }
       }
     } catch (error) {
@@ -91,17 +99,20 @@ const loginUser = asyncHandler(async (req, res) => {
 // Access   Public
 const logoutUser = asyncHandler(async (req, res) => {
     try {
-      res.cookie('token', '').json('logged out');
+      // Set the JWT to null and send it to the frontend via a cookie
+      res.cookie('token', '').json('logged out')
     } catch (error) {
-      res.status(500).json({ message: 'Error logging out' });
+      res.status(500).json({ message: 'Error logging out' })
     }
-  });
+  })
 
 // Function Edit Users (Specifically for admin users to be able to set other users as admin also)
 // Route    PUT/users
 // Access   Admin
 const editUsers = asyncHandler(async (req, res) => {
     const users = req.body;
+
+    // Use Bulk Update when a bunch of documents need to be updated at once
     const bulkUpdate = users.map((user) => ({
       updateOne: {
         filter: { _id: user._id },
@@ -111,11 +122,11 @@ const editUsers = asyncHandler(async (req, res) => {
     }))
   
     try {
-      await User.bulkWrite(bulkUpdate);
-      res.status(200).json("Users updated successfully");
+      await User.bulkWrite(bulkUpdate)
+      res.status(200).json("Users updated successfully")
     } catch (error) {
-      console.error("Error updating users:", error);
-      res.status(500).json("Failed to update users");
+      console.error("Error updating users:", error)
+      res.status(500).json("Failed to update users")
     }
 })
 
@@ -124,19 +135,19 @@ const editUsers = asyncHandler(async (req, res) => {
 // Access   Admin
 const deleteUser = asyncHandler(async (req, res) => {
   try {
-    const { id } = req.params;
-    const userDoc = await User.deleteOne({ _id: id });
+    const { id } = req.params
+    const userDoc = await User.deleteOne({ _id: id })
 
     if (userDoc.deletedCount === 0) {
       // If no User was deleted, return a 404 Not Found response
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' })
     }
 
-    res.status(200).json({ message: 'User deleted' });
+    res.status(200).json({ message: 'User deleted' })
   } catch (error) {
     // Handle any error that occurred during the deletion process
-    console.log('Error deleting User:', error);
-    res.status(500).json({ message: 'Failed to delete User' });
+    console.log('Error deleting User:', error)
+    res.status(500).json({ message: 'Failed to delete User' })
   }
 });
 
@@ -144,28 +155,28 @@ const deleteUser = asyncHandler(async (req, res) => {
 // Route    PUT /users
 // Access   Current User
 const changeUserPassword = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { newUserpassword } = req;
+  const { id } = req.params
+  const { newUserpassword } = req
 
   try {
     // Hash the new password
-    const hashedPassword = await bcrypt.hash(newUserpassword, salt);
+    const hashedPassword = await bcrypt.hash(newUserpassword, salt)
 
     // Update the user's password in the database
-    const user = await User.findById(id);
+    const user = await User.findById(id)
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' })
     }
 
     user.password = hashedPassword;
-    await user.save();
+    await user.save()
 
-    res.status(200).json({ message: 'Password updated successfully' });
+    res.status(200).json({ message: 'Password updated successfully' })
   } catch (error) {
-    console.error('Error updating password:', error);
-    res.status(500).json({ message: 'Failed to update password' });
+    console.error('Error updating password:', error)
+    res.status(500).json({ message: 'Failed to update password' })
   }
-});
+})
 
 module.exports = {
     getUsers,

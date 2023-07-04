@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ErrorPage from '../pages/ErrorPage';
 
+// Component to handle errors better for the user experience
+
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);

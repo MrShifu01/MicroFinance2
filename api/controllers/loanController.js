@@ -1,15 +1,17 @@
 const Loan = require('../models/Loan.js')
 const asyncHandler = require('../middleware/asyncHandler.js')
 
+// A file that handles all the logic of various CRUD operations in regards to the Loan data
+
 // Function get all loans
 // Route    GET /loans
 // Access   Public
 const getLoans = asyncHandler(async (req, res) => {
     try {
-      const loans = await Loan.find();
-      res.status(200).json(loans);
+      const loans = await Loan.find()
+      res.status(200).json(loans)
     } catch (error) {
-      res.status(500).json({ message: "Error fetching loans", error });
+      res.status(500).json({ message: "Error fetching loans", error })
     }
   });
 
@@ -26,7 +28,7 @@ const editLoans = asyncHandler(async (req, res) => {
         repaymentAmount,
         settled,
         notes
-      } = req.body;
+      } = req.body
   
       const loanInfo = {
         id: _id,
@@ -36,21 +38,21 @@ const editLoans = asyncHandler(async (req, res) => {
         repaymentAmount,
         settled,
         notes
-      };
+      }
   
       const updatedLoan = await Loan.findOneAndUpdate(
         { _id: loanInfo.id },
         { $set: loanInfo },
         { new: true }
-      );
+      )
   
       if (!updatedLoan) {
-        return res.status(404).json({ message: "Loan not found" });
+        return res.status(404).json({ message: "Loan not found" })
       }
   
-      res.status(200).json(updatedLoan);
+      res.status(200).json(updatedLoan)
     } catch (error) {
-      res.status(500).json({ message: "Error updating loan", error });
+      res.status(500).json({ message: "Error updating loan", error })
     }
   });
 
@@ -66,7 +68,7 @@ const addLoan = asyncHandler(async (req, res) => {
         loanAmount, 
         repaymentAmount, 
         settled, 
-        notes } = req.body;
+        notes } = req.body
       
       const loanDoc = await Loan.create({
         idNumber,
@@ -76,11 +78,11 @@ const addLoan = asyncHandler(async (req, res) => {
         repaymentAmount,
         settled,
         notes
-      });
+      })
   
-      res.status(200).json(loanDoc);
+      res.status(200).json(loanDoc)
     } catch (error) {
-      res.status(500).json({ message: "Error adding loan", error });
+      res.status(500).json({ message: "Error adding loan", error })
     }
   });
 
@@ -89,18 +91,18 @@ const addLoan = asyncHandler(async (req, res) => {
 // Access   Admin
 const deleteLoan = asyncHandler(async (req, res) => {
   try {
-    const { id } = req.params;
-    const loanDoc = await Loan.deleteOne({ _id: id });
+    const { id } = req.params
+    const loanDoc = await Loan.deleteOne({ _id: id })
 
     if (loanDoc.deletedCount === 0) {
       // If no loan was deleted, return a 404 Not Found response
-      return res.status(404).json({ message: 'Loan not found' });
+      return res.status(404).json({ message: 'Loan not found' })
     }
 
-    res.status(200).json({ message: 'Loan deleted' });
+    res.status(200).json({ message: 'Loan deleted' })
   } catch (error) {
     // Handle any error that occurred during the deletion process
-    console.log('Error deleting loan:', error);
+    console.log('Error deleting loan:', error)
     res.status(500).json({ message: 'Failed to delete loan' });
   }
 });

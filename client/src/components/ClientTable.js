@@ -1,34 +1,37 @@
-import { useMemo } from 'react';
-import { MaterialReactTable } from 'material-react-table';
-import { useSelector, useDispatch } from 'react-redux'
-import { Box, MenuItem } from '@mui/material';
-import { Link } from 'react-router-dom'
-import LoanTable from './LoanTable'
 import { useState, useEffect } from 'react';
-import { CreateNewClientModal } from './CreateNewClientModal';
-import LoadingSpinner from './LoadingSpinner'
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 import {
+  Box,
+  MenuItem,
   Button,
   IconButton,
-  Tooltip,
+  Tooltip
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-import axios from 'axios';
+import { MaterialReactTable } from 'material-react-table';
 import { setClients } from '../redux/clientsSlice';
+import LoanTable from './LoanTable';
+import LoadingSpinner from './LoadingSpinner';
+import { CreateNewClientModal } from './CreateNewClientModal';
 
 const ClientTable = () => {
+  // Setting local state variables
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const clientData = useSelector((state) => state.clients.data);
-  const user = useSelector((state) => state.user.data)
-  const [tableData, setTableData] = useState(clientData);
+  const [tableData, setTableData] = useState([]);
   const [validationErrors, setValidationErrors] = useState({});
-  const [loading, setLoading] = useState(true)
-  const columnSetting = useSelector((state) => state.settings.column)
-  const paginationSetting = useSelector((state) => state.settings.pagination)
-  const deleteSetting = useSelector((state) => state.settings.delete)
-  const badLenderChoice = ['true', 'false']
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true);
+  
+  // Fetching redux state variables
+  const user = useSelector((state) => state.user.data);
+  const columnSetting = useSelector((state) => state.settings.column);
+  const paginationSetting = useSelector((state) => state.settings.pagination);
+  const deleteSetting = useSelector((state) => state.settings.delete);
+  const badLenderChoice = ['true', 'false'];
 
+  const dispatch = useDispatch();
+
+  // Use Effect hook to fetch data from database on component initial load
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,8 +46,9 @@ const ClientTable = () => {
     };
   
     fetchData();
-  }, []);
+  }, [dispatch]);
 
+  // Function to handle creating a new row/client and adding it to the database throught the api
   const handleCreateNewRow = async (values) => {
     if (!user.isAdmin) {
       // Show alert if user is not admin
@@ -52,6 +56,7 @@ const ClientTable = () => {
       return;
     }
   
+    // Making sure that an added lender is always classified as a good lender
     const modifiedValues = { ...values, badLender: false };
   
     try {
@@ -64,6 +69,7 @@ const ClientTable = () => {
     }
   };
   
+  // Function to handle an edit of a client record
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
       if (!user.isAdmin) {
@@ -89,10 +95,12 @@ const ClientTable = () => {
     }
   };
   
+  // set Validation errors to empty object when cancelling an edit
   const handleCancelRowEdits = () => {
     setValidationErrors({});
   };
 
+  // Function to handle the deleting of a client
   const handleDeleteClient = async (clientId) => {
     
     if (!user.isAdmin) {
@@ -115,16 +123,12 @@ const ClientTable = () => {
     }
   };
 
-
-  const columns = useMemo(
-    () => [
+  // Assigning the columns and their various attributes for the table
+  const columns = [
       {
         accessorKey: 'name',
         header: 'Name',
-        size: 150,
-        Cell: ({row}) => (
-          <Link className='underline' to={`/client/${row.original._id}`}>{row.original.name}</Link>
-        )
+        size: 150
       },
       {
         accessorKey: 'idNumber',
@@ -156,6 +160,7 @@ const ClientTable = () => {
         header: 'Bad Lender',
         size: 150,
         type: "boolean",
+        // Allow a choice of 'true' or 'false' as a dropdown option in editing a client
         muiTableBodyCellEditTextFieldProps: () => ({
           children: badLenderChoice.map(choice => (
             <MenuItem key={choice} value={choice}>
@@ -164,6 +169,7 @@ const ClientTable = () => {
           )),
           select: true
         }),
+        // Color the cell if a lender is bad
         Cell: ({ row }) => (
           <div>
             {row.original.badLender && (
@@ -193,9 +199,9 @@ const ClientTable = () => {
         header: 'Notes',
         size: 150,
       },
-    ],
-  );
+    ]
 
+    // If the table is loading, return the spinner component
   if(loading) {
     return (
       <LoadingSpinner/>
@@ -204,7 +210,9 @@ const ClientTable = () => {
 
   return (
     <>
+      {/* Render the Material React Table with its various arguments */}
       <MaterialReactTable
+        // Customization for displaying column options
         displayColumnDefOptions={{
           'mrt-row-actions': {
             muiTableHeadCellProps: {
@@ -213,43 +221,50 @@ const ClientTable = () => {
             size: 120,
           },
         }}
-        columns={columns}
-        data={tableData}
-        editingMode="modal"
+        columns={columns} // Columns configuration
+        data={tableData} // Data to be displayed in the table
+        editingMode="modal" // Enable modal editing mode
+        // Enable/disable column ordering based on the setting
         enableColumnOrdering={columnSetting}
+        // Enable/disable pagination based on the setting
         enablePagination={paginationSetting}
-        enableEditing
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
-        enableColumnFilterModes
-        enablePinning
-        enableRowVirtualization
-        initialState={{ showColumnFilters: false }}
+        enableEditing // Enable editing in the table
+        onEditingRowSave={handleSaveRowEdits} // Handler for saving edited row data
+        onEditingRowCancel={handleCancelRowEdits} // Handler for canceling row edits
+        enableColumnFilterModes // Enable column filter modes
+        enablePinning // Enable column pinning
+        enableRowVirtualization // Enable row virtualization
+        initialState={{ showColumnFilters: false }} // Initial state configuration
+        // Render a detail panel for each row to show client loans
         renderDetailPanel={({ row }) => (
           <Box>
             <div>
-              <LoanTable id={row.original.idNumber}/>
+              <LoanTable id={row.original.idNumber} /> {/* Render LoanTable component for the client */}
             </div>
           </Box>
         )}
+        // Render row actions for editing and deleting a client/row
         renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', gap: '1rem'}}>
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
             <div className="ml-6 flex">
+              {/* Edit button */}
               <Tooltip arrow placement="left" title="Edit">
                 <IconButton onClick={() => table.setEditingRow(row)}>
-                    <Edit />
+                  <Edit />
                 </IconButton>
               </Tooltip>
               <div className={!deleteSetting ? 'hidden' : ''}>
-              <Tooltip arrow placement="left" title="Delete">
-                <IconButton onClick={() => handleDeleteClient(row.original._id)}>
-                  <Delete />
-                </IconButton>
-              </Tooltip>
+                {/* Delete button */}
+                <Tooltip arrow placement="left" title="Delete">
+                  <IconButton onClick={() => handleDeleteClient(row.original._id)}>
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
               </div>
             </div>
           </Box>
         )}
+        // Button to create a new client
         renderTopToolbarCustomActions={() => (
           <Button
             color="primary"
@@ -260,14 +275,17 @@ const ClientTable = () => {
           </Button>
         )}
       />
-    
+
+      {/* CreateNewClientModal component */}
+      {/* Modal for creating a new client */}
       <CreateNewClientModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
+        columns={columns} // Columns configuration for the modal form
+        open={createModalOpen} // Open state of the modal
+        onClose={() => setCreateModalOpen(false)} // Handler for closing the modal
+        onSubmit={handleCreateNewRow} // Handler for submitting the new client data
       />
     </>
+
   );
 };
 

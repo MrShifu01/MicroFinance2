@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { setUser } from '../redux/userSlice';
 import { Link, Navigate } from 'react-router-dom';
+import { setPage } from "../redux/pageSlice";
 
 export default function Register() {
     const [email, setEmail] = useState('')
@@ -14,14 +15,21 @@ export default function Register() {
 
     const dispatch = useDispatch()
 
+    useEffect(() => {
+      dispatch(setPage('register')); // Set the page in the Redux store to 'register' when the component mounts
+    }, [dispatch]);
+
+    // Function to handle registering a user
     const handleRegister = async (ev, name, email, password) => {
         ev.preventDefault()
 
+        // Check if it is a gmail account
         if (!email.endsWith('@gmail.com')) {
           alert('Email must be a gmail address');
           return;
         }
 
+        // Check if password is longer than 5 characters
         if (password.length < 6) {
           alert('Password must be more than 5 characters');
           return;

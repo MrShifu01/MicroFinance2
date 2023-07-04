@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// Async function to Connect to MongoDB and my database, Error handling included
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGO_URI)

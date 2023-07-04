@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Route Handler Snapshot Test should match the snapshot 1`] = `
+{
+  "message": "API is working!",
+}
+`;

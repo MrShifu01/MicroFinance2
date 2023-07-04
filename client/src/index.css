@@ -12,9 +12,8 @@ body {
 
 .sidebar {
     height: 100vh; /* Set the height to 100% of the viewport height */
-    background-color:#ffffff;
-    text-align: center;
-    border-left: 1px solid #eee;
-    border-top: 1px solid #eee;
-  }
-
+    background-color: #ffffff; /* Set the background color to white */
+    text-align: center; /* Center align the contents within the sidebar */
+    border-left: 1px solid #eee; /* Add a 1px solid border on the left side */
+    border-top: 1px solid #eee; /* Add a 1px solid border on the top side */
+}

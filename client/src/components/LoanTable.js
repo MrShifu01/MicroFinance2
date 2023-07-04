@@ -1,19 +1,19 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux';
 import { setLoans } from '../redux/loansSlice';
-import { useMemo, useState, useEffect } from "react";
-import { MaterialReactTable } from "material-react-table";
+import { useState, useEffect } from 'react';
+import { MaterialReactTable } from 'material-react-table';
 import { format } from 'date-fns';
-import React from "react";
+import React from 'react';
 import {
   Button,
   MenuItem,
   IconButton,
   Tooltip,
   Box
-} from "@mui/material";
-import axios from "axios";
-import { CreateNewLoanModal } from "./CreateNewLoanModal";
-import LoadingSpinner from "./LoadingSpinner";
+} from '@mui/material';
+import axios from 'axios';
+import { CreateNewLoanModal } from './CreateNewLoanModal';
+import LoadingSpinner from './LoadingSpinner';
 import { Delete } from '@mui/icons-material';
 
 const LoanTable = ({ id }) => {
@@ -28,19 +28,20 @@ const LoanTable = ({ id }) => {
   const paginationSetting = useSelector((state) => state.settings.pagination)
   const deleteSetting = useSelector((state) => state.settings.delete)
 
-  const columns = useMemo(
-    () => [
+  const columns = [
       {
         accessorKey: "loanDate",
         header: "Loan Date",
         size: 150,
         type: 'date',
+        // Allow date picker to be used to edit the cells
         muiTableBodyCellEditTextFieldProps: {
           type: 'date',
           value: ({ row }) => {
             return row.original.loanDate;
           },
         },
+        // Formatting the dates to be read easier
         Cell: ({ row }) => {
           return <div>{format(new Date(row.original.loanDate), "yyyy-MM-dd")}</div>;
         },
@@ -50,9 +51,11 @@ const LoanTable = ({ id }) => {
         header: "Repay Date",
         size: 150,
         type: 'date',
+        // Allow date picker to be used to edit the cells
         muiTableBodyCellEditTextFieldProps: {
           type: 'date',
         },
+        // Formatting the dates to be read easier
         Cell: ({ row }) => {
           return <div>{format(new Date(row.original.repaymentDate), "yyyy-MM-dd")}</div>;
         },
@@ -71,6 +74,7 @@ const LoanTable = ({ id }) => {
         accessorKey: "settled",
         header: "Settled",
         size: 150,
+        // Make a dropdown choice of true or false
         muiTableBodyCellEditTextFieldProps: () => ({
           children: settledChoice.map(choice => (
             <MenuItem key={choice} value={choice}>
@@ -79,6 +83,7 @@ const LoanTable = ({ id }) => {
           )),
           select: true,
         }),
+        // Format the color of a cell depending on the value
         Cell: ({ row }) => (
           <div>
             {row.original.settled ? (
@@ -97,28 +102,33 @@ const LoanTable = ({ id }) => {
         header: "ID Number",
         size: 150,
       },
-    ],
-    [deleteSetting],
-  );
+    ]
 
-  useEffect(() => {
-    if (Array.isArray(loanData) && loanData.length > 0) {
-      const clientLoanData = loanData.filter((loan) => loan.idNumber === id);
-      setTableData(clientLoanData);
-    }
-  }, [loanData, id]);
+    useEffect(() => {
+      // This effect runs when the `loanData` or `id` changes
+      if (Array.isArray(loanData) && loanData.length > 0) {
+        // Filter the `loanData` array to get loans belonging to the selected client (`id`)
+        const clientLoanData = loanData.filter((loan) => loan.idNumber === id);
+        setTableData(clientLoanData); // Update the table data with client-specific loans
+      }
+    }, [loanData, id]);
+    
+    useEffect(() => {
+      // This effect runs when the `id` changes
+      setTableData([]); // Clear the table data when a new client is selected
+      fetchLoanData(); // Fetch new loan data for the selected client
+    }, [id]);
+    
+    useEffect(() => {
+      // This effect runs when the `loanData` changes
+      if (!Array.isArray(loanData) || loanData.length === 0) {
+        // If there is no loan data or the loan data is empty, fetch new loan data
+        fetchLoanData();
+      }
+    }, [loanData]);
+    
 
-  useEffect(() => {
-    setTableData([]); // Clear the table data when a new client is selected
-    fetchLoanData()
-  }, [id]);
-
-  useEffect(() => {
-    if (!Array.isArray(loanData) || loanData.length === 0) {
-      fetchLoanData();
-    }
-  }, [loanData]);
-
+    // Function for fetching the loan data from the database and setting states
   const fetchLoanData = async () => {
     try {
       setLoading(true);
@@ -133,21 +143,23 @@ const LoanTable = ({ id }) => {
     }
   };
 
+  // Function to handle the saving of a cell edit
   const handleSaveCell = async (row, cell, value) => {
     const updatedInfo = JSON.parse(JSON.stringify(tableData));
-    updatedInfo[cell.row.index][cell.column.id] = value;
-    const singleRowData = updatedInfo[cell.row.index];
-  
+    updatedInfo[cell.row.index][cell.column.id] = value; // Update the value in the cloned tableData array
+    
+    const singleRowData = updatedInfo[cell.row.index]; // Get the updated data for a single row
+    
     if (!user.isAdmin) {
-      // Show alert if user is not admin
+      // Show an alert if the user is not an admin
       alert("You do not have authorization to edit a loan.");
       return;
     }
-  
+    
     try {
       const response = await axios.put('/loans', singleRowData);
       const updatedTableData = [...tableData]; // Create a copy of the tableData array
-      updatedTableData[row.index] = response.data;
+      updatedTableData[row.index] = response.data; // Update the specific row with the response data
       setTableData(updatedTableData);
       dispatch(setLoans(updatedTableData));
     } catch (error) {
@@ -155,6 +167,7 @@ const LoanTable = ({ id }) => {
     }
   };
   
+  // Function to create a new loan/row
   const handleCreateNewRow = async (values) => {
     if (!user.isAdmin) {
       // Show alert if user is not admin
@@ -172,6 +185,7 @@ const LoanTable = ({ id }) => {
     }
   };
 
+  // Function to handle the deleting of a loan/row
   const handleDeleteLoan = async (loanId) => {
     console.log(loanId)
     if (!user.isAdmin) {
@@ -201,34 +215,38 @@ const LoanTable = ({ id }) => {
   }
 
   return (
-    <>
-      <MaterialReactTable
-        displayColumnDefOptions={{
-          'mrt-row-actions': {
-            muiTableHeadCellProps: {
-              align: 'center',
+      <>
+        {/* MaterialReactTable component */}
+        <MaterialReactTable
+          // Customization for displaying column options
+          displayColumnDefOptions={{
+            'mrt-row-actions': {
+              muiTableHeadCellProps: {
+                align: 'center',
+              },
+              size: 120,
             },
-            size: 120,
-          },
-        }}
-        columns={columns}
-        data={tableData.filter((loan) => loan.idNumber === id)}
-        editingMode="cell"
-        enableEditing
-        muiTableBodyCellEditTextFieldProps={({ row, cell }) => ({
-          onBlur: (event) => {
-            handleSaveCell(row, cell, event.target.value);
-          },
-        })}
-        enableColumnFilterModes
-        enablePinning
-        enableRowActions
-        enableColumnOrdering={columnSetting}
-        enablePagination={paginationSetting}
-        enableRowVirtualization
-        initialState={{ showColumnFilters: false }}
-        renderRowActions={({ row }) => (
-          <Box>
+          }}
+          columns={columns} // Columns configuration
+          data={tableData.filter((loan) => loan.idNumber === id)} // Filtered data based on the selected client ID
+          editingMode="cell" // Enable cell editing mode
+          enableEditing // Enable editing in the table
+          // Props for customizing the text field used for cell editing
+          muiTableBodyCellEditTextFieldProps={({ row, cell }) => ({
+            onBlur: (event) => {
+              handleSaveCell(row, cell, event.target.value); // Call handleSaveCell when the cell loses focus
+            },
+          })}
+          enableColumnFilterModes // Enable column filter modes
+          enablePinning // Enable column pinning
+          enableRowActions // Enable row actions
+          enableColumnOrdering={columnSetting} // Enable column reordering based on the setting
+          enablePagination={paginationSetting} // Enable pagination based on the setting
+          enableRowVirtualization // Enable row virtualization
+          initialState={{ showColumnFilters: false }} // Initial state configuration
+          renderRowActions={({ row }) => (
+            <Box>
+              {/* Delete button for row actions */}
               <div className={!deleteSetting ? 'hidden' : ''}>
                 <Tooltip arrow placement="left" title="Delete">
                   <IconButton onClick={() => handleDeleteLoan(row.original._id)}>
@@ -236,26 +254,30 @@ const LoanTable = ({ id }) => {
                   </IconButton>
                 </Tooltip>
               </div>
-          </Box>
-        )}
-        renderTopToolbarCustomActions={() => (
-          <Button
-            color="primary"
-            onClick={() => setCreateModalOpen(true)}
-            variant="contained"
-          >
-            New Loan
-          </Button>
-        )}
-      />
-      <CreateNewLoanModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-        idNumber={id}
-      />
-    </>
+            </Box>
+          )}
+          renderTopToolbarCustomActions={() => (
+            // Custom action button in the top toolbar
+            <Button
+              color="primary"
+              onClick={() => setCreateModalOpen(true)}
+              variant="contained"
+            >
+              New Loan
+            </Button>
+          )}
+        />
+
+        {/* CreateNewLoanModal component */}
+        <CreateNewLoanModal
+          columns={columns} // Columns configuration for the modal form
+          open={createModalOpen} // Open state of the modal
+          onClose={() => setCreateModalOpen(false)} // Handler for closing the modal
+          onSubmit={handleCreateNewRow} // Handler for submitting the new row data
+          idNumber={id} // ID number of the selected client
+        />
+      </>
+
   );
 };
 
