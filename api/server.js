@@ -18,7 +18,6 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(session)
 app.use(cors({
     credentials: true,
     origin: ['http://localhost:3000', 'https://microfinance-frontend.vercel.app', '*']
