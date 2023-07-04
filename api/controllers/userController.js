@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
           {},
           (error, token) => {
             if (error) throw error;
-            res.json({token: token}).json(userDoc)
+            res.json({token: token, userDoc})
           }
         )
       }
@@ -83,7 +83,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 res.status(500).json({ message: "Error signing the token" })
               } else {
                 // Send the JWT via a json
-                res.json({token: token}).json(userDoc)
+                res.json({token: token, userDoc})
               }
             }
           )
