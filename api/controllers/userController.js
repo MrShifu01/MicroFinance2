@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
           {},
           (error, token) => {
             if (error) throw error;
-            res.cookie("token", token, {secure: false, sameSite: 'none'}).json(userDoc)
+            res.json({token: token}).json(userDoc)
           }
         )
       }
@@ -82,8 +82,8 @@ const loginUser = asyncHandler(async (req, res) => {
               if (error) {
                 res.status(500).json({ message: "Error signing the token" })
               } else {
-                // Send the JWT via a cookie for better security
-                res.cookie("token", token, {secure: false, sameSite: 'none'}).json(userDoc)
+                // Send the JWT via a json
+                res.json({token: token}).json(userDoc)
               }
             }
           )
@@ -93,18 +93,6 @@ const loginUser = asyncHandler(async (req, res) => {
       res.status(500).json({ message: "Error logging in" });
     }
   });
-  
-// Function Logout
-// Route    POST /users
-// Access   Public
-const logoutUser = asyncHandler(async (req, res) => {
-    try {
-      // Set the JWT to null and send it to the frontend via a cookie
-      res.cookie('token', '').json('logged out')
-    } catch (error) {
-      res.status(500).json({ message: 'Error logging out' })
-    }
-  })
 
 // Function Edit Users (Specifically for admin users to be able to set other users as admin also)
 // Route    PUT/users
@@ -128,7 +116,7 @@ const editUsers = asyncHandler(async (req, res) => {
       console.error("Error updating users:", error)
       res.status(500).json("Failed to update users")
     }
-})
+  })
 
 // Function delete a user
 // Route    DELETE /users
@@ -149,14 +137,14 @@ const deleteUser = asyncHandler(async (req, res) => {
     console.log('Error deleting User:', error)
     res.status(500).json({ message: 'Failed to delete User' })
   }
-});
+  });
 
 // Function change a users password
 // Route    PUT /users
 // Access   Current User
 const changeUserPassword = asyncHandler(async (req, res) => {
   const { id } = req.params
-  const { newUserpassword } = req
+  const { newUserpassword } = req.body
 
   try {
     // Hash the new password
@@ -176,12 +164,11 @@ const changeUserPassword = asyncHandler(async (req, res) => {
     console.error('Error updating password:', error)
     res.status(500).json({ message: 'Failed to update password' })
   }
-})
+  })
 
 module.exports = {
     getUsers,
     loginUser,
-    logoutUser,
     registerUser,
     editUsers,
     deleteUser,

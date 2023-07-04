@@ -18,9 +18,6 @@ router.post('/login', loginUser)
 // Edit users (AdminOnly)
 router.put('/', JWTHandler, isAdminHandler, editUsers)
 
-// User Logout
-router.post('/logout', JWTHandler, logoutUser)
-
 // Delete User (AdminOnly)
 router.delete('/:id', JWTHandler, deleteUser)
 
