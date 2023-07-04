@@ -53,7 +53,7 @@ export default function Login() {
       }}
       noValidate
       autoComplete="off"
-      className='mx-auto mt-32'
+      className='mx-auto mt-10'
     >
       <div className='flex flex-col'>
         <h2 className='text-2xl font-bold text-center mb-4'>Login</h2>
@@ -77,9 +77,31 @@ export default function Login() {
           labelPlacement="start"
           control={<Checkbox checked={rememberMe} onChange={ev => setRememberMe(ev.target.checked)} />}
         />
-        <button className='bg-primary w-20 mx-auto rounded-lg my-2' onClick={ev => handleLogin(ev, email, password)}>Login</button>
+        <button className='bg-blue-500 py-1 px-3 w-20 mx-auto rounded-lg my-2' onClick={ev => handleLogin(ev, email, password)}>Login</button>
       </div>
       <p className='text-center text-sm text-gray-500'>Don't have an account? <Link to='/register' className='mx-2 underline text-black'>Register</Link></p>
+      
+      {/* For App testing Only */}
+      <div className="my-6 border border-gray-500 p-4">
+        <h2 className="text-sm font-semibold mb-2">Example Users:</h2>
+        <ul className="list-disc ml-6">
+          <li>
+            <span className="font-semibold">Email:</span> johndoe@gmail.com
+            <br />
+            <span className="font-semibold">Password:</span> johndoe
+            <br />
+            <span className="font-semibold">Role:</span> Not Admin
+          </li>
+          <li className="mt-4">
+            <span className="font-semibold">Email:</span> janesmith@gmail.com
+            <br />
+            <span className="font-semibold">Password:</span> janesmith
+            <br />
+            <span className="font-semibold">Role:</span> Admin
+          </li>
+        </ul>
+      </div>
+
     </Box>
   );
 }

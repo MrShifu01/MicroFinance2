@@ -86,7 +86,7 @@ export default function Register() {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <button className='bg-primary w-20 mx-auto rounded-lg my-2' onClick={ev => handleRegister(ev, name, email, password)}>Register</button>
+        <button className='bg-blue-500 py-1 px-3 w-20 mx-auto rounded-lg my-2' onClick={ev => handleRegister(ev, name, email, password)}>Register</button>
       </div>
       <p className='text-center text-sm text-gray-500'>Already have an account? <Link to='/login' className='mx-2 underline text-black'>Login</Link></p>
     </Box>

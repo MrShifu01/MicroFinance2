@@ -62,13 +62,13 @@ const Header = () => {
           </li>
           {/* Link to the change password page */}
           <li>
-            <Link to="/change-password">Change Password</Link>
+            {user && <Link to="/change-password">Change Password</Link>}
           </li>
           {/* Link to log out the user */}
           <li>
-            <Link to="/" className="cursor-pointer" onClick={handleLogout}>
+            {user && <Link to="/" className="cursor-pointer" onClick={handleLogout}>
               Logout
-            </Link>
+            </Link>}
           </li>
         </ul>
       </nav>

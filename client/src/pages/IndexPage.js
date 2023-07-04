@@ -66,11 +66,11 @@ const IndexPage = () => {
       {settings && (
         // Render the sidebar and client table in a grid layout if settings are available
         <div className="grid grid-cols-8">
-          <div className="text-sm p-4 col-span-1 min-h-screen flex flex-col sidebar">
+          <div className="text-sm p-4 col-span-2 min-h-screen flex flex-col sidebar">
           {/* Sidebar component */}
             <SideBar /> 
           </div>
-          <div className="col-span-7">
+          <div className="col-span-6">
           {/* Client table component */}
             <ClientTable />
           </div>
