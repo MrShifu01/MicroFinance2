@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken')
 // Middleware function to handle JWT authentication
 function JWTHandler(req, res, next) {
   // Check if a token is attached to the request
-  if (req.header.token) {
-    const token = req.header.token
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.split(' ')[1]
     // Verify the token using the JWT_SECRET
     jwt.verify(token, process.env.JWT_SECRET, function (error, data) {
       if (error) {
