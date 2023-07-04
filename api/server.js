@@ -20,7 +20,7 @@ const app = express();
 // Middleware
 app.use(cors({
     credentials: true,
-    origin: '*'
+    origin: 'http://localhost:3000'
 }));
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
