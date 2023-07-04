@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
           {},
           (error, token) => {
             if (error) throw error;
-            res.cookie("token", token).json(userDoc)
+            res.cookie("token", token, { secure: true}).json(userDoc)
           }
         )
       }
@@ -83,7 +83,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 res.status(500).json({ message: "Error signing the token" })
               } else {
                 // Send the JWT via a cookie for better security
-                res.cookie("token", token).json(userDoc)
+                res.cookie("token", token, { secure: true}).json(userDoc)
               }
             }
           )
