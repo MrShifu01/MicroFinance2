@@ -4,27 +4,21 @@ const mongoose = require('mongoose')
 const ClientSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
     },
     idNumber: {
         type: String,
-        required: true
     },
     bank: {
         type: String,
-        required: true
     },
     accNumber: {
         type: String,
-        required: true
     },
     salaryDate: {
         type: String,
-        required: true
     },
     phone: {
         type: String,
-        required: true
     },
     badLender: {
         type: Boolean,
@@ -32,12 +26,10 @@ const ClientSchema = new mongoose.Schema({
     },
     office: {
         type: String,
-        required: true,
         default: false
     },
     address: {
         type: String,
-        required: true
     },
     loans: {
         type: mongoose.Schema.Types.ObjectId,

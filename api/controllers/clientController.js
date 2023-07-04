@@ -74,7 +74,6 @@ const createClient = asyncHandler(async (req, res) => {
       idNumber,
       address,
       notes,
-      settled,
       bank,
       accNumber,
       salaryDate,
@@ -84,21 +83,22 @@ const createClient = asyncHandler(async (req, res) => {
       industry
     } = req.body
 
-    const clientInfo = {
-      name,
-      idNumber,
-      address,
-      notes,
-      settled,
-      bank,
-      accNumber,
-      salaryDate,
-      phone,
-      badLender,
-      office,
-      industry
+    const userInfo = {
+      name: name,
+      idNumber: idNumber,
+      address: address,
+      notes: notes,
+      bank: bank,
+      accNumber: accNumber,
+      salaryDate: salaryDate,
+      phone: phone,
+      badLender: badLender,
+      office: office,
+      industry: industry,
     }
-    const newClient = await Client.create(clientInfo)
+
+    const newClient = await Client.create(userInfo)
+    console.log(newClient)
     res.status(200).json(newClient)
   } catch (error) {
     res.status(400).json({ message: "Failed to create client", error })

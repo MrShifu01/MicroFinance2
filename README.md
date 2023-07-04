@@ -51,8 +51,8 @@ npm install
 ```
 MicroFinance/
   ├── api/              # Backend server files
-  ├── client/           # Frontend client files
   ├── api/server.js     # Main Express server file
+  ├── client/           # Frontend client files
   └── ...
 ```
 
@@ -97,6 +97,18 @@ JWT_SECRET=your-api-key
 
 Make sure to replace `your-mongodb-url` with your actual MongoDB connection URL and `jwt secret` with the appropriate secret.
 
+## Creating the REACT_APP_API_BASE_URL
+
+1. Navigate to the `client` directory.
+
+2. Create a `.env` file.
+
+3. Open the `.env` file and modify the following variables:
+
+```
+REACT_APP_API_BASE_URL="http://localhost:8000"
+```
+
 ## Security Measures
 
 The Cash Loans Management System implements the following security measures:
@@ -136,7 +148,7 @@ Below is the original readme content for the Cash Loans Management System. Pleas
 The Cash Loans Management System will be developed using the MERN (MongoDB, Express.js, React.js, Node.js) stack, along with additional libraries and tools to fulfill the specified requirements.
 
 Choice of Architecture:
-The choice of the MERN (MongoDB, Express.js, React.js, Node.js) stack for the Cash Loans Management System is motivated by several factors. 
+The choice of the MERN (MongoDB, Express.js, React.js, Node.js) stack for the Cash Loans Management System is motivated by several factors.
 
 1. **Full-stack JavaScript**: The MERN stack allows for a seamless development experience by using JavaScript as the primary language across the entire application stack. This ensures consistency, code reuse, and easier collaboration between front-end and back-end.
 
@@ -145,9 +157,11 @@ The choice of the MERN (MongoDB, Express.js, React.js, Node.js) stack for the Ca
 3. **Rich UI and Interactivity**: React.js is a powerful front-end library known for its component-based architecture and virtual DOM. It enables the creation of dynamic and interactive user interfaces, which is essential for providing a smooth and intuitive experience in the Cash Loans Management System.
 
 ### Deployment Strategy:
+
 The application will be deployed using a cloud platform like Vercel and/or Render. They provide easy deployment and scalability, allowing the application to be accessible to users over the internet. By using a cloud platform, the deployment process is streamlined, and the application can handle a potentially large number of concurrent users.
 
 ### Front-end Framework and Styling:
+
 For the front-end development, Create React App (CRA) will be used. CRA is a popular toolchain that sets up a React.js project with a pre-configured build process, development server, and optimized production build. It allows to quickly bootstrap the project without worrying about complex configuration details.
 
 The application will utilize Material-UI, a widely adopted UI component library, for styling and UI components. Material-UI offers a rich set of pre-built components that follow the Material Design guidelines, resulting in a professional and consistent visual experience. The choice of Material-UI simplifies styling and ensures a modern and responsive design for the Cash Loans Management System.
@@ -192,6 +206,7 @@ The Cash Loans Management System is designed to facilitate the management of cli
 ### Key Features
 
 1. **Client Management**:
+
    - View all clients and their relevant details in a table.
    - Expand a client row to view their specific loans in an expanded slot.
    - Filter table data based on various criteria.
@@ -201,6 +216,7 @@ The Cash Loans Management System is designed to facilitate the management of cli
    - Delete clients from the client profile page.
 
 2. **Authentication and User Management**:
+
    - Support three methods of login/sign-in: Facebook, Google, and password-based login.
    - Use Clerk for authentication and user management.
    - Allow user registration with admin assignment.
@@ -222,10 +238,12 @@ While there are other loan management systems available, the Cash Loans Manageme
 ## Functional Requirements
 
 1. **User Registration and Login**:
+
    - Users can register with their email and password or choose to use Facebook or Google for login.
    - Users will be assigned a role (admin or non-admin) during registration.
 
 2. **Client Management**:
+
    - Users can view a table listing all clients with relevant details.
    - Users can expand a client row to view their specific loans in an expanded slot.
    - Users can filter and search for clients using different criteria.
@@ -234,10 +252,12 @@ While there are other loan management systems available, the Cash Loans Manageme
    - Admin users can delete clients from the client profile page.
 
 3. **Non-Admin User Access**:
+
    - Non-admin users can view the main table, loans table, and client profiles.
    - Non-admin users do not have permission to perform any CRUD operations.
 
 4. **Data Import**:
+
    - Admin users can import data from a CSV file, mapping the columns to the appropriate fields in the database.
 
 5. **Admin Page**:
@@ -248,19 +268,23 @@ While there are other loan management systems available, the Cash Loans Manageme
 ## Non-Functional Requirements
 
 1. **Security**:
+
    - User passwords will be securely stored using bcrypt encryption.
    - Authentication will be implemented using JWT tokens.
    - Access to admin-specific features and data will be restricted to authenticated admin users.
 
 2. **Performance**:
+
    - The application should load and display data efficiently, even with large datasets.
    - Data filtering, search, and sorting operations should be optimized for quick response times.
 
 3. **Scalability**:
+
    - The system should be designed to handle a growing number of clients and loans without significant performance degradation.
    - Database indexing and optimization strategies should be implemented to ensure scalability.
 
 4. **User Interface and Experience**:
+
    - The user interface should be intuitive, visually appealing, and responsive.
    - Table customization options should be easily accessible, allowing users to tailor the view to their preferences.
 
@@ -279,4 +303,7 @@ While there are other loan management systems available, the Cash Loans Manageme
 4. As an admin user, I want to be able to delete a client from the system, either directly from the main table or from the client profile page, so that I can remove irrelevant or duplicate client records.
 
 5. As a non-admin user, I want to be able to view the main table of clients and their details, as well as the loans table and client profiles, so that I can access relevant information and track loan details for specific clients.
+
+```
+
 ```
