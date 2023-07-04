@@ -9,8 +9,8 @@ import LoginPage from './pages/LoginPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 
 // Configure axios with base URL and credentials
-axios.defaults.baseURL = "https://microfinance-server.onrender.com/";
-// axios.defaults.baseURL = "http://localhost:8000";
+// axios.defaults.baseURL = "https://microfinance-server.onrender.com/";
+axios.defaults.baseURL = "http://localhost:8000";
 axios.defaults.withCredentials = true;
 
 function App() {
