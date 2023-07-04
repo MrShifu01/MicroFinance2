@@ -4,7 +4,9 @@ This repository contains the source code for the Cash Loans Management System, a
 
 Links: 
 
-Github:
+Github: https://github.com/MrShifu01/MicroFinance2
+
+Render.com Server Deployment: https://microfinance-server.onrender.com/
 
 Vercel Deployed: 
 
@@ -13,7 +15,7 @@ Vercel Deployed:
 To clone this repository, run the following command:
 
 ```
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/MrShifu01/MicroFinance2
 ```
 
 ## Installation
