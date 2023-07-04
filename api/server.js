@@ -20,7 +20,7 @@ const app = express();
 // Middleware
 app.use(cors({
     credentials: true,
-    origin: 'https://microfinance-frontend.vercel.app/'
+    origin: '*'
 }));
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
